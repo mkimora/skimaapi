@@ -55,7 +55,6 @@ class SecuriteController extends AbstractController
 
 
             $compte = new Compte();
-
             $compte->setNumCompte($values->numCompte);
             $compte->setProprioCompte($values->proprioCompte);
             $compte->setDepot($values->depot);
@@ -68,12 +67,10 @@ class SecuriteController extends AbstractController
             $compte->setPartenaire($partenaire);
 
 
-
-
-             $entityManager->persist($user);
+            $entityManager->persist($user);
             $entityManager->persist($partenaire);
             $entityManager->persist($compte);
-             $entityManager->flush();
+            $entityManager->flush();
 
 
             $data = [
