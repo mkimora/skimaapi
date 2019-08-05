@@ -61,11 +61,12 @@ class SecuriteController extends AbstractController
             $compte = new Compte();
             $jour = date('d');
             $mois = date('m');
+            $annee = date('Y');
             $heure = date('H');
-            $numCompte = $jour.$mois.$heure;
+            $numCompte = $jour.$mois.$annee.$heure;
             $compte->setNumCompte($numCompte);
             $compte->setProprioCompte($values->proprioCompte);
-            $compte->setDepot($values->depot);
+            $compte->setSoldeC($values->soldeC);
 
             //relation user et partenaire
             $user->setPartenaire($partenaire);
@@ -108,7 +109,7 @@ class SecuriteController extends AbstractController
             'roles' => $user->getRoles()
         ]);
 
-        if ($user->getEtatU() == "bloqué") {
+        if ($user->getEtatU() == "bloquer") {
             return $this->json([
                 'message' => 'ACCÈS REFUSÉ'
             ]);

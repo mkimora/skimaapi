@@ -28,10 +28,7 @@ class Compte
      */
     private $proprioCompte;
 
-    /**
-     * @ORM\Column(type="bigint")
-     */
-    private $depot;
+    
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Operation", inversedBy="comptes")
@@ -47,6 +44,11 @@ class Compte
      * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="Compte")
      */
     private $users;
+
+    /**
+     * @ORM\Column(type="bigint")
+     */
+    private $soldeC;
 
     public function __construct()
     {
@@ -82,17 +84,7 @@ class Compte
         return $this;
     }
 
-    public function getDepot(): ?int
-    {
-        return $this->depot;
-    }
-
-    public function setDepot(int $depot): self
-    {
-        $this->depot = $depot;
-
-        return $this;
-    }
+   
 
     public function getOperation(): ?Operation
     {
@@ -145,6 +137,18 @@ class Compte
                 $user->setCompte(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSoldeC(): ?int
+    {
+        return $this->soldeC;
+    }
+
+    public function setSoldeC(int $soldeC): self
+    {
+        $this->soldeC = $soldeC;
 
         return $this;
     }

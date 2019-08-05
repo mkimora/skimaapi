@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -62,6 +64,16 @@ class User implements UserInterface
      * @ORM\ManyToOne(targetEntity="App\Entity\Compte", inversedBy="users")
      */
     private $Compte;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Operation", mappedBy="User")
+     */
+    private $operations;
+
+    public function __construct()
+    {
+        $this->operations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -204,6 +216,37 @@ class User implements UserInterface
     public function setCompte(?Compte $Compte): self
     {
         $this->Compte = $Compte;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Operation[]
+     */
+    public function getOperations(): Collection
+    {
+        return $this->operations;
+    }
+
+    public function addOperation(Operation $operation): self
+    {
+        if (!$this->operations->contains($operation)) {
+            $this->operations[] = $operation;
+            $operation->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOperation(Operation $operation): self
+    {
+        if ($this->operations->contains($operation)) {
+            $this->operations->removeElement($operation);
+            // set the owning side to null (unless already changed)
+            if ($operation->getUser() === $this) {
+                $operation->setUser(null);
+            }
+        }
 
         return $this;
     }
