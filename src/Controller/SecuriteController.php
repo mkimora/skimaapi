@@ -27,7 +27,7 @@ class SecuriteController extends AbstractController
     {
         $values = json_decode($request->getContent());
         if (isset($values->username, $values->password)) {
-            $user = new user();
+            $user = new User();
             $user->setusername($values->username);
             $user->setRoles($values->roles);
             $user->setPassword($passwordEncoder->encodePassword($user, $values->password));
@@ -41,12 +41,16 @@ class SecuriteController extends AbstractController
 
 
             $partenaire = new Partenaire();
+            $jour = date('d');
+            $mois = date('m');
+            $annee = date('Y');
+            $numcomptP = $jour.$mois.$annee;
             $partenaire->setNompartenaire($values->nompartenaire);
             $partenaire->setAdresseP($values->adresseP);
             $partenaire->setRaisonSociale($values->raisonSociale);
             $partenaire->setNinea($values->ninea);
             $partenaire->setEtatP($values->etatP);
-            $partenaire->setNumcomptP($values->numcomptP);
+            $partenaire->setNumcomptP($numcomptP);
             $partenaire->setSoldeP($values->soldeP);
 
 
@@ -55,7 +59,11 @@ class SecuriteController extends AbstractController
 
 
             $compte = new Compte();
-            $compte->setNumCompte($values->numCompte);
+            $jour = date('d');
+            $mois = date('m');
+            $heure = date('H');
+            $numCompte = $jour.$mois.$heure;
+            $compte->setNumCompte($numCompte);
             $compte->setProprioCompte($values->proprioCompte);
             $compte->setDepot($values->depot);
 
