@@ -80,9 +80,11 @@ class SecuriteController extends AbstractController
 
             return new JsonResponse($data, 201);
 
+
+           
             $data = [
                 'statut' => 500,
-                'mess' => 'Vous devez renseigner les clés username et password'
+                'message' => 'Vous devez renseigner les clés username et password'
             ];
             return new JsonResponse($data, 500);
         }
