@@ -43,6 +43,12 @@ class Operation
      */
     private $User;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Compte", inversedBy="operations")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $Compte;
+
     public function __construct()
     {
         $this->comptes = new ArrayCollection();
@@ -128,6 +134,18 @@ class Operation
     public function setUser(?User $User): self
     {
         $this->User = $User;
+
+        return $this;
+    }
+
+    public function getCompte(): ?Compte
+    {
+        return $this->Compte;
+    }
+
+    public function setCompte(?Compte $Compte): self
+    {
+        $this->Compte = $Compte;
 
         return $this;
     }

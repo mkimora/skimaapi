@@ -28,13 +28,6 @@ class Compte
      */
     private $proprioCompte;
 
-    
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Operation", inversedBy="comptes")
-     */
-    private $Operation;
-
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Partenaire", inversedBy="comptes")
      */
@@ -50,9 +43,15 @@ class Compte
      */
     private $soldeC;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Operation", mappedBy="Compte")
+     */
+    private $operations;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->operations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -85,18 +84,6 @@ class Compte
     }
 
    
-
-    public function getOperation(): ?Operation
-    {
-        return $this->Operation;
-    }
-
-    public function setOperation(?Operation $Operation): self
-    {
-        $this->Operation = $Operation;
-
-        return $this;
-    }
 
     public function getPartenaire(): ?Partenaire
     {
@@ -149,6 +136,37 @@ class Compte
     public function setSoldeC(int $soldeC): self
     {
         $this->soldeC = $soldeC;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Operation[]
+     */
+    public function getOperations(): Collection
+    {
+        return $this->operations;
+    }
+
+    public function addOperation(Operation $operation): self
+    {
+        if (!$this->operations->contains($operation)) {
+            $this->operations[] = $operation;
+            $operation->setCompte($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOperation(Operation $operation): self
+    {
+        if ($this->operations->contains($operation)) {
+            $this->operations->removeElement($operation);
+            // set the owning side to null (unless already changed)
+            if ($operation->getCompte() === $this) {
+                $operation->setCompte(null);
+            }
+        }
 
         return $this;
     }

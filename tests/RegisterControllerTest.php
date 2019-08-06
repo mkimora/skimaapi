@@ -36,7 +36,6 @@ class RegisterControllerTest extends WebTestCase
             "depot":"75000"
              }
         '
-        
         );
 
         $rep = $client->getResponse();

@@ -14,12 +14,20 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+
 /**
  * @Route("/api")
  */
 class SecuriteController extends AbstractController
 {
+    private $passwordEncoder;
+
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+    {
+        $this->passwordEncoder = $passwordEncoder;
+    }
     /**
      * @Route("/register", name="register", methods={"POST"})
      */
@@ -29,7 +37,21 @@ class SecuriteController extends AbstractController
         if (isset($values->username, $values->password)) {
             $user = new User();
             $user->setusername($values->username);
-            $user->setRoles($values->roles);
+            if (strtolower($values->roles == strtolower(1))) {
+                $user->setRoles(['ROLE_SUPERADMIN']);
+            }
+            if (strtolower($values->roles == strtolower(2))) {
+                $user->setRoles(['ROLE_ADMIN']);
+            }
+
+            if (strtolower($values->roles == strtolower(3))) {
+                $user->setRoles(['ROLE_USER']);
+            }
+
+            if (strtolower($values->roles == strtolower(4))) {
+                $user->setRoles(['ROLE_CAISSIER']);
+            }
+            //$user->setRoles($values->roles);
             $user->setPassword($passwordEncoder->encodePassword($user, $values->password));
             $user->setEtatU($values->etatU);
             $user->setAdresseU($values->adresseU);
@@ -44,7 +66,7 @@ class SecuriteController extends AbstractController
             $jour = date('d');
             $mois = date('m');
             $annee = date('Y');
-            $numcomptP = $jour.$mois.$annee;
+            $numcomptP = $jour . $mois . $annee;
             $partenaire->setNompartenaire($values->nompartenaire);
             $partenaire->setAdresseP($values->adresseP);
             $partenaire->setRaisonSociale($values->raisonSociale);
@@ -63,7 +85,7 @@ class SecuriteController extends AbstractController
             $mois = date('m');
             $annee = date('Y');
             $heure = date('H');
-            $numCompte = $jour.$mois.$annee.$heure;
+            $numCompte = $jour . $mois . $annee . $heure;
             $compte->setNumCompte($numCompte);
             $compte->setProprioCompte($values->proprioCompte);
             $compte->setSoldeC($values->soldeC);
@@ -90,7 +112,7 @@ class SecuriteController extends AbstractController
             return new JsonResponse($data, 201);
 
 
-           
+
             $data = [
                 'statut' => 500,
                 'message' => 'Vous devez renseigner les clés username et password'
@@ -98,23 +120,48 @@ class SecuriteController extends AbstractController
             return new JsonResponse($data, 500);
         }
     }
-    /**
+ /**
      * @Route("/login", name="login", methods={"POST"})
+     * @param JWTEncoderInterface $JWTEncoder
+     * @throws \Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException
      */
-    public function login(Request $request)
-    {
-        $user = $this->getuser();
-        return $this->json([
-            'username' => $user->getusername(),
-            'roles' => $user->getRoles()
-        ]);
+    public function login(Request $request, JWTEncoderInterface  $JWTEncoder)
+    { 
+   
+       $values = json_decode($request->getContent());
+        $username   = $values->username; // json-string
+        $password   = $values->password; // json-string
 
-        if ($user->getEtatU() == "bloquer") {
-            return $this->json([
-                'message' => 'ACCÈS REFUSÉ'
+            $repo = $this->getDoctrine()->getRepository(User::class);
+            $user = $repo-> findOneBy(['username' => $username]);
+            if(!$user){
+                return $this->json([
+                        'message' => 'Username incorrect'
+                    ]);
+            }
+
+            $isValid = $this->passwordEncoder
+            ->isPasswordValid($user, $password);
+            if(!$isValid){ 
+                return $this->json([
+                    'message' => 'Mot de passe incorect'
+                ]);
+            }
+            if($user->getEtatU()=="bloquer"){
+                return $this->json([
+                    'message' => 'ACCÈS REFUSÉ'
+                ]);
+            }
+            $token = $JWTEncoder->encode([
+                'username' => $user->getUsername(),
+                'exp' => time() + 86400 // 1 day expiration
             ]);
-        }
+
+            return $this->json([
+                'token' => $token
+            ]);
+                
     }
 
-
+    
 }
