@@ -38,7 +38,7 @@ class SecuriteController extends AbstractController
             $user = new User();
             $user->setusername($values->username);
             if (strtolower($values->roles == strtolower(1))) {
-                $user->setRoles(['ROLE_SUPERADMIN']);
+                $user->setRoles(['ROLE_superadmin']);
             }
             if (strtolower($values->roles == strtolower(2))) {
                 $user->setRoles(['ROLE_ADMIN']);
@@ -51,7 +51,6 @@ class SecuriteController extends AbstractController
             if (strtolower($values->roles == strtolower(4))) {
                 $user->setRoles(['ROLE_CAISSIER']);
             }
-            //$user->setRoles($values->roles);
             $user->setPassword($passwordEncoder->encodePassword($user, $values->password));
             $user->setEtatU($values->etatU);
             $user->setAdresseU($values->adresseU);
@@ -111,8 +110,6 @@ class SecuriteController extends AbstractController
 
             return new JsonResponse($data, 201);
 
-
-
             $data = [
                 'statut' => 500,
                 'message' => 'Vous devez renseigner les clés username et password'
@@ -120,48 +117,21 @@ class SecuriteController extends AbstractController
             return new JsonResponse($data, 500);
         }
     }
- /**
+    /**
      * @Route("/login", name="login", methods={"POST"})
-     * @param JWTEncoderInterface $JWTEncoder
-     * @throws \Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException
      */
     public function login(Request $request, JWTEncoderInterface  $JWTEncoder)
-    { 
-   
-       $values = json_decode($request->getContent());
-        $username   = $values->username; // json-string
-        $password   = $values->password; // json-string
+    {
+        $user = $this->getUser();
+        return $this->json([
+            'username' => $user->getUsername(),
+            'roles' => $user->getRoles()
+        ]);
 
-            $repo = $this->getDoctrine()->getRepository(User::class);
-            $user = $repo-> findOneBy(['username' => $username]);
-            if(!$user){
-                return $this->json([
-                        'message' => 'Username incorrect'
-                    ]);
-            }
-
-            $isValid = $this->passwordEncoder
-            ->isPasswordValid($user, $password);
-            if(!$isValid){ 
-                return $this->json([
-                    'message' => 'Mot de passe incorect'
-                ]);
-            }
-            if($user->getEtatU()=="bloquer"){
-                return $this->json([
-                    'message' => 'ACCÈS REFUSÉ'
-                ]);
-            }
-            $token = $JWTEncoder->encode([
-                'username' => $user->getUsername(),
-                'exp' => time() + 86400 // 1 day expiration
-            ]);
-
+        if ($user->getEtatU() == "bloquer") {
             return $this->json([
-                'token' => $token
+                'message' => 'L\'ACCÈS VOUS EST REFUSÉ CAR VOUS ETES BLOQUÉ'
             ]);
-                
+        }
     }
-
-    
 }
