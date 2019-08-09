@@ -99,14 +99,14 @@ class SecuriteController extends AbstractController
     public function login(Request $request, JWTEncoderInterface  $JWTEncoder)
     {
         $values = json_decode($request->getContent());
-        $username   = $values->username; // json-string
-        $password   = $values->password; // json-string
+        $username  = $values->username; // json-string
+        $password  = $values->password; // json-string
 
         $repo = $this->getDoctrine()->getRepository(User::class);
         $user = $repo->findOneBy(['username' => $username]);
         if (!$user) {
             return $this->json([
-                'message' => 'Username incorrect'
+                'mess' => 'Username incorrect'
             ]);
         }
 
@@ -114,18 +114,18 @@ class SecuriteController extends AbstractController
             ->isPasswordValid($user, $password);
         if (!$isValid) {
             return $this->json([
-                'message' => 'Mot de passe incorect'
+                'mess' => 'Mot de passe incorect'
             ]);
         }
-        if ($user->getEtatU() == "bloquer") {
+        if ($user->getEtatU() == "débloqué") {
             return $this->json([
-                'message' => 'ACCÈS REFUSÉ'
+                'mess' => 'ACCÈS REFUSÉ'
             ]);
         }
-        $token = $JWTEncoder->encode([
-            'username' => $user->getUsername(),
-            'exp' => time() + 86400 // 1 day expiration
-        ]);
+        // $token = $JWTEncoder->encode([
+        //     'username' => $user->getUsername(),
+        //     'exp' => time() + 86400 // 1 day expiration
+        // ]);
 
         return $this->json([
             'token' => $token
@@ -135,7 +135,6 @@ class SecuriteController extends AbstractController
     /**
      * @Route("/bloquer", name="bloquer", methods={"GET","POST"})
      * @Route("/debloquer", name="debloquer", methods={"GET","POST"})
-
      */
     public function blocage(Request $request, UserRepository $UserRepository, EntityManagerInterface $entityManager)
     {
