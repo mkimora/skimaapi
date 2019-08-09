@@ -44,15 +44,9 @@ class Partenaire
      */
     private $etatP;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $numcomptP;
+  
 
-    /**
-     * @ORM\Column(type="bigint")
-     */
-    private $soldeP;
+
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Compte", mappedBy="Partenaire")
@@ -131,30 +125,9 @@ class Partenaire
         return $this;
     }
 
-    public function getNumcomptP(): ?int
-    {
-        return $this->numcomptP;
-    }
 
-    public function setNumcomptP(int $numcomptP): self
-    {
-        $this->numcomptP = $numcomptP;
 
-        return $this;
-    }
-
-    public function getSoldeP(): ?int
-    {
-        return $this->soldeP;
-    }
-
-    public function setSoldeP(int $soldeP): self
-    {
-        $this->soldeP = $soldeP;
-
-        return $this;
-    }
-
+  
     /**
      * @return Collection|Compte[]
      */

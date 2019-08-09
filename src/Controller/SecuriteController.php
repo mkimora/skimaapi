@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Role;
 use App\Entity\User;
 use App\Entity\Compte;
+use App\Form\UserType;
 use App\Entity\Partenaire;
-use App\Repository\userRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,106 +34,129 @@ class SecuriteController extends AbstractController
      * @Route("/register", name="register", methods={"POST"})
      */
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $entityManager)
-    {
-        $values = json_decode($request->getContent());
-        if (isset($values->username, $values->password)) {
-            $user = new User();
-            $user->setusername($values->username);
-            if (strtolower($values->roles == strtolower(1))) {
+    {  // 1) build the form
+        $user = new User();
+        $form = $this->createForm(UserType::class, $user);
+
+        // 2) handle the submit (will only happen on POST)
+        $form->handleRequest($request);
+        $values = $request->request->all();
+        $form->submit($values);
+        $fichier = $request->files->all()['image'];
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user->setPassword(
+                $passwordEncoder->encodePassword(
+                    $user,
+                    $form->get('plainPassword')->getData()
+                )
+            );
+            $user->setImageFile($fichier);
+            $user->setEtatU("actif");
+
+            $repos = $this->getDoctrine()->getRepository(Role::class);
+            $roless = $repos->find($values['Role']);
+            $user->setRole($roless);
+
+
+
+            if ($roless->getLibelle() == "superadmin") {
                 $user->setRoles(['ROLE_superadmin']);
-            }
-            if (strtolower($values->roles == strtolower(2))) {
+            } elseif ($roless->getLibelle() == "admin") {
                 $user->setRoles(['ROLE_ADMIN']);
-            }
-
-            if (strtolower($values->roles == strtolower(3))) {
+            } elseif ($roless->getLibelle() == "user") {
                 $user->setRoles(['ROLE_USER']);
-            }
-
-            if (strtolower($values->roles == strtolower(4))) {
+            } elseif ($roless->getLibelle() == "caissier") {
                 $user->setRoles(['ROLE_CAISSIER']);
             }
-            $user->setPassword($passwordEncoder->encodePassword($user, $values->password));
-            $user->setEtatU($values->etatU);
-            $user->setAdresseU($values->adresseU);
-            $user->setNom($values->nom);
-            $user->setPrenom($values->prenom);
+            // $users = $this->getUser()->getPartenaire();
+
+            $repos = $this->getDoctrine()->getRepository(Partenaire::class);
+            $part = $repos->find($values['Partenaire']);
+            $user->setPartenaire($part);
 
 
 
-
-
-            $partenaire = new Partenaire();
-            $jour = date('d');
-            $mois = date('m');
-            $annee = date('Y');
-            $numcomptP = $jour . $mois . $annee;
-            $partenaire->setNompartenaire($values->nompartenaire);
-            $partenaire->setAdresseP($values->adresseP);
-            $partenaire->setRaisonSociale($values->raisonSociale);
-            $partenaire->setNinea($values->ninea);
-            $partenaire->setEtatP($values->etatP);
-            $partenaire->setNumcomptP($numcomptP);
-            $partenaire->setSoldeP($values->soldeP);
-
-
-
-
-
-
-            $compte = new Compte();
-            $jour = date('d');
-            $mois = date('m');
-            $annee = date('Y');
-            $heure = date('H');
-            $numCompte = $jour . $mois . $annee . $heure;
-            $compte->setNumCompte($numCompte);
-            $compte->setProprioCompte($values->proprioCompte);
-            $compte->setSoldeC($values->soldeC);
-
-            //relation user et partenaire
-            $user->setPartenaire($partenaire);
-            //relation user et compte
-            $user->setCompte($compte);
-            //relation partenaire et compte
-            $compte->setPartenaire($partenaire);
-
-
+            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
-            $entityManager->persist($partenaire);
-            $entityManager->persist($compte);
             $entityManager->flush();
-
-
             $data = [
-                'statut' => 201,
-                'mess' => 'L\'utilisateur a été créé'
+                'status1' => 201,
+                'message1' => 'L\'utilisateur a été créé'
             ];
-
             return new JsonResponse($data, 201);
-
-            $data = [
-                'statut' => 500,
-                'message' => 'Vous devez renseigner les clés username et password'
-            ];
-            return new JsonResponse($data, 500);
         }
+        $data = [
+            'status2' => 500,
+            'message2' => 'L\'insertion a échoué'
+        ];
+        return new JsonResponse($data, 500);
     }
     /**
      * @Route("/login", name="login", methods={"POST"})
+     * @param JWTEncoderInterface $JWTEncoder
+     * @throws \Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException
      */
     public function login(Request $request, JWTEncoderInterface  $JWTEncoder)
     {
-        $user = $this->getUser();
-        return $this->json([
-            'username' => $user->getUsername(),
-            'roles' => $user->getRoles()
-        ]);
+        $values = json_decode($request->getContent());
+        $username   = $values->username; // json-string
+        $password   = $values->password; // json-string
 
+        $repo = $this->getDoctrine()->getRepository(User::class);
+        $user = $repo->findOneBy(['username' => $username]);
+        if (!$user) {
+            return $this->json([
+                'message' => 'Username incorrect'
+            ]);
+        }
+
+        $isValid = $this->passwordEncoder
+            ->isPasswordValid($user, $password);
+        if (!$isValid) {
+            return $this->json([
+                'message' => 'Mot de passe incorect'
+            ]);
+        }
         if ($user->getEtatU() == "bloquer") {
             return $this->json([
-                'message' => 'L\'ACCÈS VOUS EST REFUSÉ CAR VOUS ETES BLOQUÉ'
+                'message' => 'ACCÈS REFUSÉ'
+            ]);
+        }
+        $token = $JWTEncoder->encode([
+            'username' => $user->getUsername(),
+            'exp' => time() + 86400 // 1 day expiration
+        ]);
+
+        return $this->json([
+            'token' => $token
+        ]);
+    }
+
+    /**
+     * @Route("/bloquer", name="bloquer", methods={"GET","POST"})
+     * @Route("/debloquer", name="debloquer", methods={"GET","POST"})
+
+     */
+    public function blocage(Request $request, UserRepository $UserRepository, EntityManagerInterface $entityManager)
+    {
+        $values = json_decode($request->getContent());
+        $user = $UserRepository->findOneByUsername($values->username);
+
+        if ($user->getEtatU() == "actif") {
+            $user->setEtatU("debloquer");
+            $entityManager->flush();
+
+            return $this->json([
+                'message' => 'L\'utilisateur a été bloqué'
+            ]);
+        } else {
+            $user->setEtatU("actif");
+            $entityManager->flush();
+            return $this->json([
+                'message' => 'L\'utilisateur a été débloqué'
             ]);
         }
     }
+
+    
 }

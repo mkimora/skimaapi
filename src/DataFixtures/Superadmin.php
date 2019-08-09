@@ -24,6 +24,8 @@ class Superadmin extends Fixture
         $user->setAdresseU("dieuppeul 2");
         $user->setNom("ndiaye");
         $user->setPrenom("mama guisse");
+        $user->setImage(" ");
+
 
         $manager->persist($user);
         
