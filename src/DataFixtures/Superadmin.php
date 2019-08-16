@@ -6,6 +6,7 @@ use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class Superadmin extends Fixture
 {
@@ -25,6 +26,7 @@ class Superadmin extends Fixture
         $user->setNom("ndiaye");
         $user->setPrenom("mama guisse");
         $user->setImage(" ");
+        $user->setUpdatedAt(new \DateTime());
 
 
         $manager->persist($user);
@@ -32,4 +34,6 @@ class Superadmin extends Fixture
 
         $manager->flush();
     }
+
+    
 }
