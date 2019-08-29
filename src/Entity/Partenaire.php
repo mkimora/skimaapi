@@ -18,17 +18,7 @@ class Partenaire
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $nompartenaire;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $adresseP;
-
-
+    
     /**
      * @ORM\Column(type="string", length=255)
      */
@@ -39,19 +29,42 @@ class Partenaire
      */
     private $ninea;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $etatP;
-
-  
-
-
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Compte", mappedBy="Partenaire")
      */
     private $comptes;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $telephone;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $email;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $nomCompletU;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $username;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $adresseU;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $etatU;
+
 
     public function __construct()
     {
@@ -63,31 +76,6 @@ class Partenaire
         return $this->id;
     }
 
-    public function getNompartenaire(): ?string
-    {
-        return $this->nompartenaire;
-    }
-
-    public function setNompartenaire(string $nompartenaire): self
-    {
-        $this->nompartenaire = $nompartenaire;
-
-        return $this;
-    }
-
-    public function getAdresseP(): ?string
-    {
-        return $this->adresseP;
-    }
-
-    public function setAdresseP(string $adresseP): self
-    {
-        $this->adresseP = $adresseP;
-
-        return $this;
-    }
-
-   
 
     public function getRaisonSociale(): ?string
     {
@@ -113,17 +101,6 @@ class Partenaire
         return $this;
     }
 
-    public function getEtatP(): ?string
-    {
-        return $this->etatP;
-    }
-
-    public function setEtatP(string $etatP): self
-    {
-        $this->etatP = $etatP;
-
-        return $this;
-    }
 
 
 
@@ -158,4 +135,78 @@ class Partenaire
 
         return $this;
     }
+
+    public function getTelephone(): ?int
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(int $telephone): self
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getNomCompletU(): ?string
+    {
+        return $this->nomCompletU;
+    }
+
+    public function setNomCompletU(string $nomCompletU): self
+    {
+        $this->nomCompletU = $nomCompletU;
+
+        return $this;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function getAdresseU(): ?string
+    {
+        return $this->adresseU;
+    }
+
+    public function setAdresseU(string $adresseU): self
+    {
+        $this->adresseU = $adresseU;
+
+        return $this;
+    }
+
+    public function getEtatU(): ?string
+    {
+        return $this->etatU;
+    }
+
+    public function setEtatU(string $etatU): self
+    {
+        $this->etatU = $etatU;
+
+        return $this;
+    }
+
+    
 }

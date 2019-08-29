@@ -24,11 +24,6 @@ class Compte
     private $numCompte;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $proprioCompte;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Partenaire", inversedBy="comptes")
      */
     private $Partenaire;
@@ -71,20 +66,7 @@ class Compte
         return $this;
     }
 
-    public function getProprioCompte(): ?string
-    {
-        return $this->proprioCompte;
-    }
-
-    public function setProprioCompte(string $proprioCompte): self
-    {
-        $this->proprioCompte = $proprioCompte;
-
-        return $this;
-    }
-
    
-
     public function getPartenaire(): ?Partenaire
     {
         return $this->Partenaire;
@@ -170,4 +152,5 @@ class Compte
 
         return $this;
     }
+
 }

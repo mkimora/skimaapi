@@ -36,12 +36,14 @@ class UserType extends AbstractType
                         'max' => 4096,
                     ]),
                 ],
-            ])            
+            ])       
+            ->add('email')     
+            ->add('telephone')     
             ->add('adresseU')
-            ->add('nom')
-            ->add('prenom')
+            ->add('nomCompletU')
             ->add('imageFile', VichImageType::class)
-            ->add('Partenaire', EntityType::class,['class'=>Partenaire::class])
+            ->add('Partenaire', EntityType::class,[
+                        'class'=>Partenaire::class])
             ->add('Compte', EntityType::class,['class'=>Compte::class])
             ->add('Role', EntityType::class,['class'=>Role::class])
 

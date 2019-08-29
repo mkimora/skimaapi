@@ -55,15 +55,7 @@ class User implements UserInterface
      */
     private $Partenaire;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $nom;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $prenom;
+    
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Compte", inversedBy="users")
@@ -76,12 +68,12 @@ class User implements UserInterface
     private $operations;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $image;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $updatedAt;
 
@@ -97,6 +89,21 @@ class User implements UserInterface
      * @ORM\ManyToOne(targetEntity="App\Entity\Role", inversedBy="users")
      */
     private $Role;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $nomCompletU;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $telephone;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $email;
 
     public function __construct()
     {
@@ -212,29 +219,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(string $nom): self
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getPrenom(): ?string
-    {
-        return $this->prenom;
-    }
-
-    public function setPrenom(string $prenom): self
-    {
-        $this->prenom = $prenom;
-
-        return $this;
-    }
 
     public function getCompte(): ?Compte
     {
@@ -336,6 +320,42 @@ class User implements UserInterface
     public function setRole(?Role $Role): self
     {
         $this->Role = $Role;
+
+        return $this;
+    }
+
+    public function getNomCompletU(): ?string
+    {
+        return $this->nomCompletU;
+    }
+
+    public function setNomCompletU(string $nomCompletU): self
+    {
+        $this->nomCompletU = $nomCompletU;
+
+        return $this;
+    }
+
+    public function getTelephone(): ?int
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(int $telephone): self
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
 
         return $this;
     }

@@ -43,7 +43,7 @@ class SecuriteController extends AbstractController
         $values = $request->request->all();
         $form->submit($values);
         $fichier = $request->files->all()['image'];
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted()) {
             $user->setPassword(
                 $passwordEncoder->encodePassword(
                     $user,
@@ -114,7 +114,7 @@ class SecuriteController extends AbstractController
             ->isPasswordValid($user, $password);
         if (!$isValid) {
             return $this->json([
-                'mess' => 'Mot de passe incorect'
+                'mess' => 'Mot de passe incorrect'
             ]);
         }
         if ($user->getEtatU() == "débloqué") {
