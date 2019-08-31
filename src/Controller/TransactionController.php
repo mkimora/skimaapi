@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Transaction;
 use App\Form\TransactionType;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -29,39 +30,53 @@ class TransactionController extends AbstractController
         $transactions = $jour . $mois . $annee . $heure;
 
         $form = $this->createForm(TransactionType::class, $transaction);
-        // $form->handleRequest($request);
+        $form->handleRequest($request);
         $values = $request->request->all();
         $form->submit($values);
-        
+
         if ($form->isSubmitted()) {
 
-        $transaction->setCode($transactions);
-        
+            $transaction->setCode($transactions);
 
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($transaction);
-        $entityManager->flush();
-        $data = [
-            'status1' => 201,
-            'message1' => 'La transaction a été un succés'
-        ];
-        return new JsonResponse($data, 201);
 
-    }
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($transaction);
+            $entityManager->flush();
+            $data = [
+                'status1' => 201,
+                'message1' => 'La transaction a été un succés'
+            ];
+            return new JsonResponse($data, 201);
+        }
         $data = [
             'status2' => 500,
             'message2' => 'La transaction a échoué'
         ];
         return new JsonResponse($data, 500);
 
-    
+
+        /**
+         * @Route("/envoi", name="envoyer", methods={"POST"})
+         */
+        public function envoi(request $request) 
+        {
+            $envoi = new Envoi();
+            $form = $this->createForm(EnvoiType::class, $envoi);
+
+            
+            $form -> handleRequest($request);
+            $form->submit($values);
+            dump($values);
+
+
+        }
 
         // recuperer la valeur du frais
         // $repository = $this->getDoctrine()->getRepository(Tarif::class);
         // $commission = $repository->findAll();
 
         //recuperer la valeur du montant saisie
-       // $montant = $transaction->getMontant();
+        // $montant = $transaction->getMontant();
 
         //Verifier si le montant est disponible en solde 
         // $comptes = $this->getUser()->getCompte();
