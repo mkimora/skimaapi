@@ -56,7 +56,7 @@ class Transaction
 
 
     /**
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(type="bigint", nullable=true)
      */
     private $numCniBene;
 

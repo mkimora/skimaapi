@@ -18,16 +18,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class TransactionController extends AbstractController
 {
     /**
-     * @Route("/transaction", name="transactions", methods={"POST"})
+     * @Route("/envoi", name="envoyer", methods={"POST"})
      */
-    public function index(Request $request, EntityManagerInterface $entityManager)
+    public function envoi(Request $request, EntityManagerInterface $entityManager)
     {
         $transaction = new Transaction();
         $jour = date('d');
         $mois = date('m');
         $annee = date('Y');
         $heure = date('H');
-        $transactions = $jour . $mois . $annee . $heure;
+        $transactionss = $jour . $mois . $annee . $heure;
 
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
@@ -36,7 +36,7 @@ class TransactionController extends AbstractController
 
         if ($form->isSubmitted()) {
 
-            $transaction->setCode($transactions);
+            $transaction->setCode($transactionss);
 
 
             $entityManager = $this->getDoctrine()->getManager();
@@ -53,23 +53,52 @@ class TransactionController extends AbstractController
             'message2' => 'La transaction a échoué'
         ];
         return new JsonResponse($data, 500);
+    }
+
+    /**
+     * @Route("/retrait", name="retirer", methods={"POST"})
+     */
+    public function retrait(Request $request)
+    {
+        $transaction = new Transaction();
+        $form = $this->createForm(TransactionType::class, $transaction);
 
 
-        /**
-         * @Route("/envoi", name="envoyer", methods={"POST"})
-         */
-        public function envoi(request $request) 
-        {
-            $envoi = new Envoi();
-            $form = $this->createForm(EnvoiType::class, $envoi);
+        $form->handleRequest($request);
+        //pour récupérer toutes les données saisies
+        $values = $request->request->all();
+        $form->submit($values);
+        dump($values);
+        $transaction = new Transaction();
+        $jour = date('d');
+        $mois = date('m');
+        $annee = date('Y');
+        $heure = date('H');
+        $transactionsss = $jour . $mois . $annee . $heure;
+        if ($form->isSubmitted()) {
 
-            
-            $form -> handleRequest($request);
-            $form->submit($values);
-            dump($values);
+
+            $transaction->setCode($transactionsss);
 
 
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($transaction);
+            $entityManager->flush();
+
+            $data = [
+                'status1' => 201,
+                'message1' => 'L\'envoi est un succès'
+            ];
+            return new JsonResponse($data, 201);
         }
+        $data = [
+            'statut2' => 500,
+            'mess2' => 'L\'envoi a échoué'
+        ];
+        return new JsonResponse($data, 500);
+    }
+}
 
         // recuperer la valeur du frais
         // $repository = $this->getDoctrine()->getRepository(Tarif::class);
@@ -109,5 +138,3 @@ class TransactionController extends AbstractController
 
         // $total = $montant + $valeur;
         // $transaction->setTotal($total);
-    }
-}

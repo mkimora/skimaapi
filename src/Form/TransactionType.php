@@ -19,7 +19,7 @@ class TransactionType extends AbstractType
             ->add('nomBene')
             ->add('prenomBene')
             ->add('numBene')
-            ->add('numCniBene')
+            //->add('numCniBene')
         ;
     }
 
