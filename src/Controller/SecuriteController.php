@@ -42,7 +42,7 @@ class SecuriteController extends AbstractController
         $form->handleRequest($request);
         $values = $request->request->all();
         $form->submit($values);
-        $fichier = $request->files->all()['image'];
+        $fichier = $request->files->all()['imageFile'];
         if ($form->isSubmitted()) {
             $user->setPassword(
                 $passwordEncoder->encodePassword(
@@ -52,23 +52,24 @@ class SecuriteController extends AbstractController
             );
             $user->setImageFile($fichier);
             $user->setEtatU("actif");
+            //$user->setRoles(['']);
 
             $repos = $this->getDoctrine()->getRepository(Role::class);
-            $roless = $repos->find($values['Role']);
+            $roless = $user->getRole();
             $user->setRole($roless);
 
 
 
-            if ($roless->getLibelle() == "superadmin") {
+            if ($roless->getId() == 1) {
                 $user->setRoles(['ROLE_superadmin']);
-            } elseif ($roless->getLibelle() == "admin") {
+            } elseif ($roless->getId() == 2) {
                 $user->setRoles(['ROLE_ADMIN']);
-            } elseif ($roless->getLibelle() == "user") {
+            } elseif ($roless->getId() == 3) {
                 $user->setRoles(['ROLE_USER']);
-            } elseif ($roless->getLibelle() == "caissier") {
+            } elseif ($roless->getId() == 4) {
                 $user->setRoles(['ROLE_CAISSIER']);
             }
-            // $users = $this->getUser()->getPartenaire();
+            //$users = $this->getUser()->getPartenaire();
 
             $repos = $this->getDoctrine()->getRepository(Partenaire::class);
             $part = $repos->find($values['Partenaire']);

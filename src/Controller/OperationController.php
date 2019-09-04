@@ -25,6 +25,8 @@ class OperationController extends AbstractController
 
     public function depot(Request $request, EntityManagerInterface $entityManager)
     {
+
+        
         $user = $this->getUser();
     
         $values = json_decode($request->getContent());

@@ -21,7 +21,7 @@ class UserType extends AbstractType
     {
         $builder
             ->add('username')
-            ->add('role')
+            ->add('Role',EntityType::class,['class'=>Role::class])
             ->add('plainPassword', PasswordType::class, [
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller
@@ -45,7 +45,6 @@ class UserType extends AbstractType
             ->add('Partenaire', EntityType::class,[
                         'class'=>Partenaire::class])
             ->add('Compte', EntityType::class,['class'=>Compte::class])
-            ->add('Role', EntityType::class,['class'=>Role::class])
 
         ;
     }

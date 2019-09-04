@@ -18,7 +18,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class PartenaireController extends AbstractController
 {
     /**
-     * @Route("/partenaire", name="partenaire")
+     * @Route("/partenaire", name="partenaire", methods={"POST"})
      */
     public function parte(Request $request, EntityManagerInterface $entityManager, UserPasswordEncoderInterface $password)
     {
