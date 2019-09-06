@@ -6,10 +6,12 @@ use App\Entity\User;
 use App\Entity\Compte;
 use App\Entity\Partenaire;
 use App\Form\PartenaireType;
+use App\Repository\PartenaireRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 /**
@@ -30,7 +32,7 @@ class PartenaireController extends AbstractController
         $form->submit($values);
         dump($values);
         if ($form->isSubmitted() ) {
-            $partenaire->setEtatU('debloquer');
+            $partenaire->setEtatU('actif');
 
 
             $compte = new Compte();
@@ -52,9 +54,10 @@ class PartenaireController extends AbstractController
             $user->setUsername($partenaire->getUsername());
             $user->setNomCompletU($partenaire->getNomCompletU());
             $user->setPartenaire($partenaire);
+            $user->setCompte($compte);
             $user->setAdresseU($partenaire->getAdresseU());
             $user->setRoles(['ROLE_ADMIN']);
-            $user->setEtatU('debloquer');
+            $user->setEtatU('actif');
             $user->setPassword($password->encodePassword($user, 'entrer'));
 
 
@@ -83,7 +86,19 @@ class PartenaireController extends AbstractController
         ];
         return new JsonResponse($data, 500);
     }
+ /**
+     * @Route("/listeP", name="listeliste", methods={"GET"})
+     */
+    public function listep(PartenaireRepository $partenaireRepository, SerializerInterface $serializer)
+    {
+        
+        $listes = $partenaireRepository->findAll();
+        $data = $serializer->serialize($listes, 'json');
 
+        return new Response($data, 200, [
+            'Content-Type' => 'application/json'
+        ]);
+    }
 
         
 }

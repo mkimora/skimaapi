@@ -16,21 +16,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
  */
 class ListeController extends AbstractController
 {
+
     /**
-     * @Route("/listeP", name="listeliste", methods={"GET"})
-     */
-    public function listep(PartenaireRepository $partenaireRepository, SerializerInterface $serializer)
-    {
-        
-        $listes = $partenaireRepository->findAll();
-        $data = $serializer->serialize($listes, 'json');
-
-        return new Response($data, 200, [
-            'Content-Type' => 'application/json'
-        ]);
-    }
-
-       /**
      * @Route("/listeU", name="listeuser", methods={"GET"})
      */
     public function listeu(UserRepository $userRepository, SerializerInterface $serializer)
@@ -44,6 +31,17 @@ class ListeController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/listeP", name="listeliste", methods={"GET"})
+     */
+    public function listep(PartenaireRepository $partenaireRepository, SerializerInterface $serializer)
+    {
+        
+        $listes = $partenaireRepository->findAll();
+        $data = $serializer->serialize($listes, 'json');
 
-
-}
+        return new Response($data, 200, [
+            'Content-Type' => 'application/json'
+        ]);
+    }
+}   

@@ -2,32 +2,27 @@
 
 namespace App\Form;
 
-use App\Entity\Partenaire;
+use App\Entity\Operation;
+use Proxies\__CG__\App\Entity\Compte;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class PartenaireType extends AbstractType
+class OperationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('nomCompletU')
-            ->add('adresseU')
-            ->add('raisonSociale')
-            ->add('ninea')
-            ->add('etatU')
-            ->add('telephone')
-            ->add('email')
-            ->add('username')
-
+            ->add('nouveauSolde')
+            ->add('Compte',EntityType::class, ['class'=>Compte::class]);
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Partenaire::class,
+            'data_class' => Operation::class,
         ]);
     }
 }

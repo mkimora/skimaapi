@@ -31,13 +31,13 @@ class TransactionController extends AbstractController
 
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
+        //pour récupérer toutes les données saisies
         $values = $request->request->all();
         $form->submit($values);
 
         if ($form->isSubmitted()) {
 
             $transaction->setCode($transactionss);
-
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($transaction);
@@ -81,6 +81,10 @@ class TransactionController extends AbstractController
             $transaction->setCode($transactionsss);
 
 
+             $repo = $this->getDoctrine()->getRepository(Transaction::class);
+             $transaction = $repo->findOneBy(['code'=> $values->code]);
+             $transaction = $transaction->getTelEnvoyeur();
+
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($transaction);
@@ -88,13 +92,13 @@ class TransactionController extends AbstractController
 
             $data = [
                 'status1' => 201,
-                'message1' => 'L\'envoi est un succès'
+                'message1' => 'Le retrait est un succès'
             ];
             return new JsonResponse($data, 201);
         }
         $data = [
             'statut2' => 500,
-            'mess2' => 'L\'envoi a échoué'
+            'mess2' => 'Le retrait ne peut se faire.'
         ];
         return new JsonResponse($data, 500);
     }
